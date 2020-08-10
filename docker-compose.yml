@@ -1,6 +1,48 @@
 version: '3'
 
 services:
-    ubuntu:
+    php-fpm:
         build:
-            context: ./ubuntu
+            context: ./php
+        volumes:
+            - ../SuitesFlow:/var/www/
+
+    nginx:
+        build:
+            context: ./nginx
+        volumes:
+            - ../SuitesFlow:/var/www/
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./nginx/sites/:/etc/nginx/sites-available
+            - ./nginx/conf.d/:/etc/nginx/conf.d
+        depends_on:
+        - php-fpm
+        ports:
+            - "80:80"
+            - "443:443"
+
+    db:
+        build:
+            context: ./db
+        environment:
+            - MYSQL_DATABASE=render_appdb
+            - MYSQL_USER=render_appdbu
+            - MYSQL_PASSWORD=8BDGIegPW1
+            - MYSQL_ROOT_PASSWORD=docker
+        volumes:
+            - ./db/data.sql:/docker-entrypoint-initdb.d/data.sql
+        ports:
+            - 3306:3306
+        depends_on:
+            - php-fpm
+
+    myadmin:
+        image: phpmyadmin/phpmyadmin
+        ports:
+            - "8080:80"
+        environment:
+            - PMA_ARBITRARY=1
+            - PMA_HOST=localhost
+        restart: always
+        depends_on:
+            - db
