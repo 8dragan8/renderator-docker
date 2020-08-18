@@ -1,48 +1,90 @@
-version: '3'
+version: "3"
 
 services:
-    php-fpm:
-        build:
-            context: ./php
-        volumes:
-            - ../SuitesFlow:/var/www/
+  php-fpm:
+    build:
+      context: ./php
+    container_name: "php-app1"
 
-    nginx:
-        build:
-            context: ./nginx
-        volumes:
-            - ../SuitesFlow:/var/www/
-            - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-            - ./nginx/sites/:/etc/nginx/sites-available
-            - ./nginx/conf.d/:/etc/nginx/conf.d
-        depends_on:
-        - php-fpm
-        ports:
-            - "80:80"
-            - "443:443"
+    volumes:
+      - ../SuitesFlow:/var/www/
+    networks:
+      - app-network
 
-    db:
-        build:
-            context: ./db
-        environment:
-            - MYSQL_DATABASE=render_appdb
-            - MYSQL_USER=render_appdbu
-            - MYSQL_PASSWORD=8BDGIegPW1
-            - MYSQL_ROOT_PASSWORD=docker
-        volumes:
-            - ./db/data.sql:/docker-entrypoint-initdb.d/data.sql
-        ports:
-            - 3306:3306
-        depends_on:
-            - php-fpm
+  node-js:
+    build:
+      context: ../SuitesFlow-NodeJS
+    container_name: "node-js"
+    # image: node:14.0.0
+    volumes:
+      - ../SuitesFlow-NodeJS/:/usr/src/app/
+      - node_modules:/usr/src/app/node_modules
+      - nuxt:/usr/src/app/.nuxt
 
-    myadmin:
-        image: phpmyadmin/phpmyadmin
-        ports:
-            - "8080:80"
-        environment:
-            - PMA_ARBITRARY=1
-            - PMA_HOST=localhost
-        restart: always
-        depends_on:
-            - db
+    working_dir: /usr/src/app/
+    ports:
+      - "3000:3000"
+    command: sh -c "npm run dev"
+    # command: sh -c "npm run build && npm run start"
+    environment:
+      - HOST=0.0.0.0
+    networks:
+      - app-network
+
+  nginx:
+    build:
+      context: ./nginx
+    container_name: "nginx-app1"
+
+    volumes:
+      - ../SuitesFlow:/var/www/
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/sites/:/etc/nginx/sites-available
+      - ./nginx/conf.d/:/etc/nginx/conf.d
+    depends_on:
+      - php-fpm
+      - node-js
+
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - app-network
+  db:
+    build:
+      context: ./db
+    container_name: "db-app1"
+    environment:
+      - MYSQL_DATABASE=render_appdb
+      - MYSQL_USER=render_appdbu
+      - MYSQL_PASSWORD=8BDGIegPW1
+      - MYSQL_ROOT_PASSWORD=docker
+    volumes:
+      - ./db/data.sql:/docker-entrypoint-initdb.d/data.sql
+    ports:
+      - 3306:3306
+    depends_on:
+      - php-fpm
+    networks:
+      - app-network
+
+  myadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: "myadmin-app1"
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=localhost
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+volumes:
+  node_modules:
+  nuxt:
