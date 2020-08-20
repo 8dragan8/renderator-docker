@@ -15,7 +15,6 @@ services:
     build:
       context: ../SuitesFlow-NodeJS
     container_name: "node-js"
-    # image: node:14.0.0
     volumes:
       - ../SuitesFlow-NodeJS/:/usr/src/app/
       - node_modules:/usr/src/app/node_modules
@@ -25,9 +24,12 @@ services:
     ports:
       - "3000:3000"
     command: sh -c "npm run dev"
-    # command: sh -c "npm run build && npm run start"
     environment:
       - HOST=0.0.0.0
+      - API_URL=http://localhost
+      - SSR_API_URL=http://nginx-app1      
+      - DATA_URL=http://localhost
+      - SSR_DATA_URL=http://nginx-app1
     networks:
       - app-network
 

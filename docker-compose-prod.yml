@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+
+  node-js:
+    volumes:
+      - ../SuitesFlow-NodeJS/:/usr/src/app/
+      - node_modules:/usr/src/app/node_modules
+    command: sh -c "npm run start"
+volumes:
+    node_modules:
