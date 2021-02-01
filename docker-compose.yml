@@ -10,6 +10,7 @@ services:
 
     volumes:
       - ../SuitesFlow:/var/www/
+      - ../Tours:/var/www/tours
       - ./php/php.ini:/usr/local/etc/php/conf.d/99.overrides.php.ini
 
     networks:
@@ -36,7 +37,7 @@ services:
       # - ../SuitesFlow-NodeJS/.env:/usr/src/app/.env
     working_dir: /usr/src/app/
     ports:
-      - "3000:3000"
+      - "9001:3000"
     command: sh -c "npm run dev"
     environment:
       - HOST=0.0.0.0
@@ -66,6 +67,8 @@ services:
 
     volumes:
       - ../SuitesFlow:/var/www/
+      - ../Tours:/var/www/tours
+      - ../Tours/renderator/action/renderatorAction.xml :/var/www/renderator/action/renderatorAction.xml
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/sites/:/etc/nginx/sites-available
       - ./nginx/conf.d/:/etc/nginx/conf.d
@@ -75,7 +78,7 @@ services:
 
     ports:
       - "90:80"
-      - "443:443"
+      - "9443:443"
     networks:
       - app-network
   db:
@@ -90,7 +93,7 @@ services:
     volumes:
       - ./db/data_20210104.sql:/docker-entrypoint-initdb.d/data.sql
     ports:
-      - 3306:3306
+      - 9306:3306
     depends_on:
       - php-fpm
     networks:
