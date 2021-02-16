@@ -9,10 +9,11 @@ services:
       XDEBUG_CONFIG: remote_host=host.docker.internal remote_port=9000 remote_enable=1
 
     volumes:
-      - ../SuitesFlow:/var/www/
-      - ../Tours:/var/www/tours
+      - ../SuitesFlow:/home/apprender/
+      - ../Tours:/home/tours
+      - ../2d.suitesflow.com:/home/2D
       - ./php/php.ini:/usr/local/etc/php/conf.d/99.overrides.php.ini
-
+    restart: unless-stopped
     networks:
       - app-network
 
@@ -21,27 +22,30 @@ services:
       context: ../SuitesFlow-NodeJS
     container_name: "node-js"
     volumes:
-      - ../SuitesFlow-NodeJS/assets/:/usr/src/app/assets/
-      - ../SuitesFlow-NodeJS/components/:/usr/src/app/components/
-      - ../SuitesFlow-NodeJS/common/:/usr/src/app/common/
-      - ../SuitesFlow-NodeJS/layouts/:/usr/src/app/layouts/
-      - ../SuitesFlow-NodeJS/middleware/:/usr/src/app/middleware/
-      - ../SuitesFlow-NodeJS/mixins/:/usr/src/app/mixins/
-      - ../SuitesFlow-NodeJS/pages/:/usr/src/app/pages/
-      - ../SuitesFlow-NodeJS/plugins/:/usr/src/app/plugins/
-      - ../SuitesFlow-NodeJS/static/:/usr/src/app/static/
-      - ../SuitesFlow-NodeJS/store/:/usr/src/app/store/
-      - ../SuitesFlow-NodeJS/api/:/usr/src/app/api/
-      - ../SuitesFlow-NodeJS/jsconfig.json:/usr/src/app/jsconfig.json
-      - ../SuitesFlow-NodeJS/nuxt.config.js:/usr/src/app/nuxt.config.js
-      # - ../SuitesFlow-NodeJS/.env:/usr/src/app/.env
-    working_dir: /usr/src/app/
+      - ../SuitesFlow-NodeJS/assets/:/home/apprender/front-end/assets/
+      - ../SuitesFlow-NodeJS/config/:/home/apprender/front-end/config/
+      - ../SuitesFlow-NodeJS/locales/:/home/apprender/front-end/locales/
+      - ../SuitesFlow-NodeJS/components/:/home/apprender/front-end/components/
+      - ../SuitesFlow-NodeJS/common/:/home/apprender/front-end/common/
+      - ../SuitesFlow-NodeJS/layouts/:/home/apprender/front-end/layouts/
+      - ../SuitesFlow-NodeJS/middleware/:/home/apprender/front-end/middleware/
+      - ../SuitesFlow-NodeJS/mixins/:/home/apprender/front-end/mixins/
+      - ../SuitesFlow-NodeJS/pages/:/home/apprender/front-end/pages/
+      - ../SuitesFlow-NodeJS/plugins/:/home/apprender/front-end/plugins/
+      - ../SuitesFlow-NodeJS/static/:/home/apprender/front-end/static/
+      - ../SuitesFlow-NodeJS/store/:/home/apprender/front-end/store/
+      - ../SuitesFlow-NodeJS/api/:/home/apprender/front-end/api/
+      - ../SuitesFlow-NodeJS/jsconfig.json:/home/apprender/front-end/jsconfig.json
+      - ../SuitesFlow-NodeJS/nuxt.config.js:/home/apprender/front-end/nuxt.config.js
+      # - ../SuitesFlow-NodeJS/.env:'/home/apprender/front-end/.env
+    working_dir: /home/apprender/front-end/
     ports:
       - "9001:3000"
     command: sh -c "npm run dev"
     environment:
       - HOST=0.0.0.0
       - APP_API_URL=http://localhost:90
+      - API_URL=http://localhost:90
       - SSR_API_URL=http://nginx-app1
       - DATA_URL=http://localhost:90
       - SSR_DATA_URL=http://nginx-app1
@@ -57,6 +61,7 @@ services:
       - GOOGLE_SECRET=6LfkT9AZAAAAAMFD4WXdy5Mo05FGBq8IYGihoGa5
       - GOOGLE_SITE=6LfkT9AZAAAAAB_CdVACMBP0pd61idodn7g9H0eq
 
+    restart: unless-stopped
     networks:
       - app-network
 
@@ -64,11 +69,12 @@ services:
     build:
       context: ./nginx
     container_name: "nginx-app1"
-
+    restart: unless-stopped
     volumes:
-      - ../SuitesFlow:/var/www/
-      - ../Tours:/var/www/tours
-      - ../Tours/renderator/action/renderatorAction.xml :/var/www/renderator/action/renderatorAction.xml
+      - ../SuitesFlow:/home/apprender/
+      - ../Tours:/home/tours
+      - ../2d.suitesflow.com:/home/2D
+      - ../Tours/renderator/action/renderatorAction.xml :/home/renderator/action/renderatorAction.xml
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/sites/:/etc/nginx/sites-available
       - ./nginx/conf.d/:/etc/nginx/conf.d
@@ -90,6 +96,7 @@ services:
       - MYSQL_USER=render_appdbu
       - MYSQL_PASSWORD=8BDGIegPW1
       - MYSQL_ROOT_PASSWORD=docker
+    restart: unless-stopped
     volumes:
       - ./db/data_20210104.sql:/docker-entrypoint-initdb.d/data.sql
     ports:
@@ -107,9 +114,21 @@ services:
     environment:
       - PMA_ARBITRARY=1
       - PMA_HOST=localhost
-    restart: always
+    restart: unless-stopped
     depends_on:
       - db
+    networks:
+      - app-network
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog-app1
+    logging:
+      driver: "none" # disable saving logs
+    ports:
+      - 1026:1025 # smtp server
+      - 8026:8025 # web ui
+    restart: unless-stopped
     networks:
       - app-network
 
