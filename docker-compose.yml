@@ -44,14 +44,14 @@ services:
     command: sh -c "npm run dev"
     environment:
       - HOST=0.0.0.0
-      - APP_API_URL=http://localhost:90
-      - API_URL=http://localhost:90
-      - SSR_API_URL=http://nginx-app1
+      - APP_API_URL=http://localhost:90/apprender
+      - API_URL=http://localhost:90/apprender
+      - SSR_API_URL=http://nginx-app1/apprender
       - DATA_URL=http://localhost:90
-      - SSR_DATA_URL=http://nginx-app1
-      - API_SF_URL=http://nginx-app1/php/api
+      - SSR_DATA_URL=http://nginx-app1/apprender
+      - API_SF_URL=http://nginx-app1/apprender/php/api
       - API_VT_URL=https://api.renderator.com/api
-      - SSR_API_SF_URL=http://nginx-app1/php/api
+      - SSR_API_SF_URL=http://nginx-app1/apprender/php/api
 
       - API_DB_DATABASE=new_projects
       - API_DB_USER=new_projects_user
