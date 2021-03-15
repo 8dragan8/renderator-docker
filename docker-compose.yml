@@ -22,23 +22,10 @@ services:
       context: ${SF_NUXT_LOCAL_DIR}
     container_name: "node-js"
     volumes:
-      - ${SF_NUXT_LOCAL_DIR}/assets/:${SF_NUXT_REMOTE_DIR}/assets/
-      - ${SF_NUXT_LOCAL_DIR}/config/:${SF_NUXT_REMOTE_DIR}/config/
-      - ${SF_NUXT_LOCAL_DIR}/locales/:${SF_NUXT_REMOTE_DIR}/locales/
-      - ${SF_NUXT_LOCAL_DIR}/components/:${SF_NUXT_REMOTE_DIR}/components/
-      - ${SF_NUXT_LOCAL_DIR}/common/:${SF_NUXT_REMOTE_DIR}/common/
-      - ${SF_NUXT_LOCAL_DIR}/layouts/:${SF_NUXT_REMOTE_DIR}/layouts/
-      - ${SF_NUXT_LOCAL_DIR}/middleware/:${SF_NUXT_REMOTE_DIR}/middleware/
-      - ${SF_NUXT_LOCAL_DIR}/mixins/:${SF_NUXT_REMOTE_DIR}/mixins/
-      - ${SF_NUXT_LOCAL_DIR}/pages/:${SF_NUXT_REMOTE_DIR}/pages/
-      - ${SF_NUXT_LOCAL_DIR}/plugins/:${SF_NUXT_REMOTE_DIR}/plugins/
-      - ${SF_NUXT_LOCAL_DIR}/static/:${SF_NUXT_REMOTE_DIR}/static/
-      - ${SF_NUXT_LOCAL_DIR}/store/:${SF_NUXT_REMOTE_DIR}/store/
-      - ${SF_NUXT_LOCAL_DIR}/api/:${SF_NUXT_REMOTE_DIR}/api/
-      - ${SF_NUXT_LOCAL_DIR}/jsconfig.json:${SF_NUXT_REMOTE_DIR}/jsconfig.json
-      - ${SF_NUXT_LOCAL_DIR}/nuxt.config.js:${SF_NUXT_REMOTE_DIR}/nuxt.config.js
-      # - ${SF_NUXT_LOCAL_DIR}/package.json:${SF_NUXT_REMOTE_DIR}/package.json
-      # - ${SF_NUXT_LOCAL_DIR}/.env:'${SF_NUXT_REMOTE_DIR}/.env
+      - ${SF_NUXT_LOCAL_DIR}:${SF_NUXT_REMOTE_DIR}
+      # exclude
+      - ${SF_NUXT_REMOTE_DIR}/.nuxt
+      - ${SF_NUXT_REMOTE_DIR}/node_modules
     working_dir: ${SF_NUXT_REMOTE_DIR}
     ports:
       - "9001:3000"
@@ -72,28 +59,16 @@ services:
     container_name: "nginx-app1"
     restart: unless-stopped
     volumes:
-      - ${TOURS_LOCAL_DIR}:${TOURS_REMOTE_DIR}
-      - ${SF_LOCAL_DIR}:${SF_REMOTE_DIR}
-      - ${TWO_D_LOCAL_DIR}:${TWO_D_REMOTE_DIR}
-      - ${SF_NUXT_LOCAL_DIR}/api/:${SF_NUXT_REMOTE_DIR}/api/
-      - ${SF_NUXT_LOCAL_DIR}/assets/:${SF_NUXT_REMOTE_DIR}/assets/
-      - ${SF_NUXT_LOCAL_DIR}/common/:${SF_NUXT_REMOTE_DIR}/common/
-      - ${SF_NUXT_LOCAL_DIR}/components/:${SF_NUXT_REMOTE_DIR}/components/
-      - ${SF_NUXT_LOCAL_DIR}/config/:${SF_NUXT_REMOTE_DIR}/config/
-      - ${SF_NUXT_LOCAL_DIR}/layouts/:${SF_NUXT_REMOTE_DIR}/layouts/
-      - ${SF_NUXT_LOCAL_DIR}/locales/:${SF_NUXT_REMOTE_DIR}/locales/
-      - ${SF_NUXT_LOCAL_DIR}/middleware/:${SF_NUXT_REMOTE_DIR}/middleware/
-      - ${SF_NUXT_LOCAL_DIR}/mixins/:${SF_NUXT_REMOTE_DIR}/mixins/
-      - ${SF_NUXT_LOCAL_DIR}/pages/:${SF_NUXT_REMOTE_DIR}/pages/
-      - ${SF_NUXT_LOCAL_DIR}/plugins/:${SF_NUXT_REMOTE_DIR}/plugins/
-      - ${SF_NUXT_LOCAL_DIR}/static/:${SF_NUXT_REMOTE_DIR}/static/
-      - ${SF_NUXT_LOCAL_DIR}/store/:${SF_NUXT_REMOTE_DIR}/store/
-      - ${SF_NUXT_LOCAL_DIR}/jsconfig.json:${SF_NUXT_REMOTE_DIR}/jsconfig.json
-      - ${SF_NUXT_LOCAL_DIR}/nuxt.config.js:${SF_NUXT_REMOTE_DIR}/nuxt.config.js
-      # - ${SF_NUXT_LOCAL_DIR}/package.json:${SF_NUXT_REMOTE_DIR}/package.json
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/sites/:/etc/nginx/sites-available
       - ./nginx/conf.d/:/etc/nginx/conf.d
+      - ${TOURS_LOCAL_DIR}:${TOURS_REMOTE_DIR}
+      - ${SF_LOCAL_DIR}:${SF_REMOTE_DIR}
+      - ${TWO_D_LOCAL_DIR}:${TWO_D_REMOTE_DIR}
+      - ${SF_NUXT_LOCAL_DIR}:${SF_NUXT_REMOTE_DIR}
+      # exclude
+      - ${SF_NUXT_REMOTE_DIR}/.nuxt
+      - ${SF_NUXT_REMOTE_DIR}/node_modules
     depends_on:
       - php-fpm
       - node-js
