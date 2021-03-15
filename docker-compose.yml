@@ -7,11 +7,11 @@ services:
     container_name: "php-app1"
     environment:
       XDEBUG_CONFIG: remote_host=host.docker.internal remote_port=9000 remote_enable=1
-
+    env_file: .env
     volumes:
-      - ../SuitesFlow:/home/apprender/
-      - ../Tours:/home/tours
-      - ../2d.suitesflow.com:/home/2D
+      - ${SF_LOCAL_DIR}:${SF_REMOTE_DIR}
+      - ${TOURS_LOCAL_DIR}:${TOURS_REMOTE_DIR}
+      - ${TWO_D_LOCAL_DIR}:${TWO_D_REMOTE_DIR}
       - ./php/php.ini:/usr/local/etc/php/conf.d/99.overrides.php.ini
     restart: unless-stopped
     networks:
@@ -19,47 +19,48 @@ services:
 
   node-js:
     build:
-      context: ../SuitesFlow-NodeJS
+      context: ${SF_NUXT_LOCAL_DIR}
     container_name: "node-js"
     volumes:
-      - ../SuitesFlow-NodeJS/assets/:/home/apprender/front-end/assets/
-      - ../SuitesFlow-NodeJS/config/:/home/apprender/front-end/config/
-      - ../SuitesFlow-NodeJS/locales/:/home/apprender/front-end/locales/
-      - ../SuitesFlow-NodeJS/components/:/home/apprender/front-end/components/
-      - ../SuitesFlow-NodeJS/common/:/home/apprender/front-end/common/
-      - ../SuitesFlow-NodeJS/layouts/:/home/apprender/front-end/layouts/
-      - ../SuitesFlow-NodeJS/middleware/:/home/apprender/front-end/middleware/
-      - ../SuitesFlow-NodeJS/mixins/:/home/apprender/front-end/mixins/
-      - ../SuitesFlow-NodeJS/pages/:/home/apprender/front-end/pages/
-      - ../SuitesFlow-NodeJS/plugins/:/home/apprender/front-end/plugins/
-      - ../SuitesFlow-NodeJS/static/:/home/apprender/front-end/static/
-      - ../SuitesFlow-NodeJS/store/:/home/apprender/front-end/store/
-      - ../SuitesFlow-NodeJS/api/:/home/apprender/front-end/api/
-      - ../SuitesFlow-NodeJS/jsconfig.json:/home/apprender/front-end/jsconfig.json
-      - ../SuitesFlow-NodeJS/nuxt.config.js:/home/apprender/front-end/nuxt.config.js
-      # - ../SuitesFlow-NodeJS/.env:'/home/apprender/front-end/.env
-    working_dir: /home/apprender/front-end/
+      - ${SF_NUXT_LOCAL_DIR}/assets/:${SF_NUXT_REMOTE_DIR}/assets/
+      - ${SF_NUXT_LOCAL_DIR}/config/:${SF_NUXT_REMOTE_DIR}/config/
+      - ${SF_NUXT_LOCAL_DIR}/locales/:${SF_NUXT_REMOTE_DIR}/locales/
+      - ${SF_NUXT_LOCAL_DIR}/components/:${SF_NUXT_REMOTE_DIR}/components/
+      - ${SF_NUXT_LOCAL_DIR}/common/:${SF_NUXT_REMOTE_DIR}/common/
+      - ${SF_NUXT_LOCAL_DIR}/layouts/:${SF_NUXT_REMOTE_DIR}/layouts/
+      - ${SF_NUXT_LOCAL_DIR}/middleware/:${SF_NUXT_REMOTE_DIR}/middleware/
+      - ${SF_NUXT_LOCAL_DIR}/mixins/:${SF_NUXT_REMOTE_DIR}/mixins/
+      - ${SF_NUXT_LOCAL_DIR}/pages/:${SF_NUXT_REMOTE_DIR}/pages/
+      - ${SF_NUXT_LOCAL_DIR}/plugins/:${SF_NUXT_REMOTE_DIR}/plugins/
+      - ${SF_NUXT_LOCAL_DIR}/static/:${SF_NUXT_REMOTE_DIR}/static/
+      - ${SF_NUXT_LOCAL_DIR}/store/:${SF_NUXT_REMOTE_DIR}/store/
+      - ${SF_NUXT_LOCAL_DIR}/api/:${SF_NUXT_REMOTE_DIR}/api/
+      - ${SF_NUXT_LOCAL_DIR}/jsconfig.json:${SF_NUXT_REMOTE_DIR}/jsconfig.json
+      - ${SF_NUXT_LOCAL_DIR}/nuxt.config.js:${SF_NUXT_REMOTE_DIR}/nuxt.config.js
+      # - ${SF_NUXT_LOCAL_DIR}/package.json:${SF_NUXT_REMOTE_DIR}/package.json
+      # - ${SF_NUXT_LOCAL_DIR}/.env:'${SF_NUXT_REMOTE_DIR}/.env
+    working_dir: ${SF_NUXT_REMOTE_DIR}
     ports:
       - "9001:3000"
     command: sh -c "npm run dev"
     environment:
-      - HOST=0.0.0.0
-      - APP_API_URL=http://localhost:90/apprender
-      - API_URL=http://localhost:90/apprender
-      - SSR_API_URL=http://nginx-app1/apprender
-      - DATA_URL=http://localhost:90
-      - SSR_DATA_URL=http://nginx-app1/apprender
-      - API_SF_URL=http://nginx-app1/apprender/php/api
-      - API_VT_URL=https://api.renderator.com/api
-      - SSR_API_SF_URL=http://nginx-app1/apprender/php/api
+      HOST: "0.0.0.0"
+      APP_API_URL: "http://localhost:90"
+      API_URL: "http://localhost:90"
+      SSR_API_URL: "http://nginx-app1"
+      DATA_URL: "http://localhost:90"
+      SSR_DATA_URL: "http://nginx-app1"
+      API_SF_URL: "http://nginx-app1/php/api"
+      API_VT_URL: "https://api.renderator.com/api"
+      SSR_API_SF_URL: "http://nginx-app1/php/api"
 
-      - API_DB_DATABASE=new_projects
-      - API_DB_USER=new_projects_user
-      - API_DB_PASSWORD=UboLEsbI819wzrxo
-      - API_DB_HOST=db
+      API_DB_DATABASE: "new_projects"
+      API_DB_USER: "new_projects_user"
+      API_DB_PASSWORD: "UboLEsbI819wzrxo"
+      API_DB_HOST: "db"
 
-      - GOOGLE_SECRET=6LfkT9AZAAAAAMFD4WXdy5Mo05FGBq8IYGihoGa5
-      - GOOGLE_SITE=6LfkT9AZAAAAAB_CdVACMBP0pd61idodn7g9H0eq
+      GOOGLE_SECRET: "6LfkT9AZAAAAAMFD4WXdy5Mo05FGBq8IYGihoGa5"
+      GOOGLE_SITE: "6LfkT9AZAAAAAB_CdVACMBP0pd61idodn7g9H0eq"
 
     restart: unless-stopped
     networks:
@@ -71,10 +72,25 @@ services:
     container_name: "nginx-app1"
     restart: unless-stopped
     volumes:
-      - ../SuitesFlow:/home/apprender/
-      - ../Tours:/home/tours
-      - ../2d.suitesflow.com:/home/2D
-      - ../Tours/renderator/action/renderatorAction.xml :/home/renderator/action/renderatorAction.xml
+      - ${TOURS_LOCAL_DIR}:${TOURS_REMOTE_DIR}
+      - ${SF_LOCAL_DIR}:${SF_REMOTE_DIR}
+      - ${TWO_D_LOCAL_DIR}:${TWO_D_REMOTE_DIR}
+      - ${SF_NUXT_LOCAL_DIR}/api/:${SF_NUXT_REMOTE_DIR}/api/
+      - ${SF_NUXT_LOCAL_DIR}/assets/:${SF_NUXT_REMOTE_DIR}/assets/
+      - ${SF_NUXT_LOCAL_DIR}/common/:${SF_NUXT_REMOTE_DIR}/common/
+      - ${SF_NUXT_LOCAL_DIR}/components/:${SF_NUXT_REMOTE_DIR}/components/
+      - ${SF_NUXT_LOCAL_DIR}/config/:${SF_NUXT_REMOTE_DIR}/config/
+      - ${SF_NUXT_LOCAL_DIR}/layouts/:${SF_NUXT_REMOTE_DIR}/layouts/
+      - ${SF_NUXT_LOCAL_DIR}/locales/:${SF_NUXT_REMOTE_DIR}/locales/
+      - ${SF_NUXT_LOCAL_DIR}/middleware/:${SF_NUXT_REMOTE_DIR}/middleware/
+      - ${SF_NUXT_LOCAL_DIR}/mixins/:${SF_NUXT_REMOTE_DIR}/mixins/
+      - ${SF_NUXT_LOCAL_DIR}/pages/:${SF_NUXT_REMOTE_DIR}/pages/
+      - ${SF_NUXT_LOCAL_DIR}/plugins/:${SF_NUXT_REMOTE_DIR}/plugins/
+      - ${SF_NUXT_LOCAL_DIR}/static/:${SF_NUXT_REMOTE_DIR}/static/
+      - ${SF_NUXT_LOCAL_DIR}/store/:${SF_NUXT_REMOTE_DIR}/store/
+      - ${SF_NUXT_LOCAL_DIR}/jsconfig.json:${SF_NUXT_REMOTE_DIR}/jsconfig.json
+      - ${SF_NUXT_LOCAL_DIR}/nuxt.config.js:${SF_NUXT_REMOTE_DIR}/nuxt.config.js
+      # - ${SF_NUXT_LOCAL_DIR}/package.json:${SF_NUXT_REMOTE_DIR}/package.json
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/sites/:/etc/nginx/sites-available
       - ./nginx/conf.d/:/etc/nginx/conf.d
@@ -84,21 +100,22 @@ services:
 
     ports:
       - "90:80"
+      - "91:81"
+      - "92:82"
       - "9443:443"
     networks:
       - app-network
   db:
-    build:
-      context: ./db
+    image: mysql
     container_name: "db-app1"
     environment:
-      - MYSQL_DATABASE=render_appdb
-      - MYSQL_USER=render_appdbu
-      - MYSQL_PASSWORD=8BDGIegPW1
-      - MYSQL_ROOT_PASSWORD=docker
+      MYSQL_DATABASE: "render_appdb"
+      MYSQL_USER: "render_appdbu"
+      MYSQL_PASSWORD: "8BDGIegPW1"
+      MYSQL_ROOT_PASSWORD: "docker"
     restart: unless-stopped
     volumes:
-      - ./db/data_20210104.sql:/docker-entrypoint-initdb.d/data.sql
+      - app-db-volume:/var/lib/mysql
     ports:
       - 9306:3306
     depends_on:
@@ -107,13 +124,13 @@ services:
       - app-network
 
   myadmin:
-    image: phpmyadmin/phpmyadmin
+    image: phpmyadmin:latest
     container_name: "myadmin-app1"
     ports:
       - "9080:80"
     environment:
-      - PMA_ARBITRARY=1
-      - PMA_HOST=localhost
+      PMA_ARBITRARY: 1
+      PMA_HOST: "localhost"
     restart: unless-stopped
     depends_on:
       - db
@@ -136,5 +153,4 @@ networks:
   app-network:
     driver: bridge
 volumes:
-  node_modules:
-  nuxt:
+  app-db-volume:
