@@ -1,13 +1,42 @@
 FROM php:7.4-fpm-alpine
 
-RUN docker-php-ext-install pdo_mysql
-RUN printf "\n%s\n%s" "@edge http://dl-cdn.alpinelinux.org/alpine/edge/main" "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
-    && apk --update upgrade \
-    && apk add autoconf automake make gcc g++ libtool pkgconfig libmcrypt-dev re2c libressl@edge libressl-dev@edge git zlib-dev xdg-utils libpng-dev freetype-dev libjpeg-turbo-dev openssh-client libxslt-dev ca-certificates gmp-dev \
-    && update-ca-certificates
-RUN pecl install -f xdebug-2.9.0
-RUN echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini;
+# Application environment variable
+ARG APP_ENV
 
+# Install Additional dependencies
+RUN apk update && apk add --no-cache $PHPIZE_DEPS \
+   build-base shadow nano curl gcc git bash \
+   php7 \
+   php7-fpm \
+   php7-common \
+   php7-pdo \
+   php7-pdo_mysql \
+   php7-mysqli \
+   php7-mcrypt \
+   php7-mbstring \
+   php7-xml \
+   php7-openssl \
+   php7-json \
+   php7-phar \
+   php7-zip \
+   php7-gd \
+   php7-dom \
+   php7-session \
+   php7-zlib
+
+# Install extensions
+RUN docker-php-ext-install pdo pdo_mysql
+RUN docker-php-ext-enable pdo_mysql
+
+# install xdebug and enable it if the development environment is local
+RUN    pecl install xdebug; \
+   docker-php-ext-enable xdebug;
+# Install PHP Composer
+RUN curl -sS https://getcomposer.org/installer | php
+
+RUN mv composer.phar /usr/local/bin/composer
+# Remove Cache
+RUN rm -rf /var/cache/apk/*
 # COPY ./php/php.ini /usr/local/etc/php/
 
 EXPOSE 9000

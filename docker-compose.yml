@@ -6,9 +6,11 @@ services:
       context: ./php
     container_name: "php-app1"
     environment:
-      XDEBUG_CONFIG: remote_host=host.docker.internal remote_port=9000 remote_enable=1
+      APP_ENV: ${APP_ENV}
+      # XDEBUG_CONFIG: remote_host=host.docker.internal remote_port=9000 remote_enable=1
     env_file: .env
     volumes:
+      - ${USER_DASHBOARD_LOCAL_DIR}:${USER_DASHBOARD_REMOTE_DIR}
       - ${SF_LOCAL_DIR}:${SF_REMOTE_DIR}
       - ${TOURS_LOCAL_DIR}:${TOURS_REMOTE_DIR}
       - ${TWO_D_LOCAL_DIR}:${TWO_D_REMOTE_DIR}
@@ -37,9 +39,12 @@ services:
       SSR_API_URL: "http://nginx-app1"
       DATA_URL: "http://localhost:90"
       SSR_DATA_URL: "http://nginx-app1"
-      API_SF_URL: "http://nginx-app1/php/api"
-      API_VT_URL: "https://api.renderator.com/api"
-      SSR_API_SF_URL: "http://nginx-app1/php/api"
+      API_SF_URL: "http://192.168.0.104/api/v1"
+      API_VT_URL: "http://192.168.0.104/api/v1"
+      SSR_API_SF_URL: "http://192.168.0.104/api/v1"
+      # API_SF_URL: "http://nginx-app1/php/api"
+      # API_VT_URL: "https://api.renderator.com/api"
+      # SSR_API_SF_URL: "http://nginx-app1/php/api"
 
       API_DB_DATABASE: "new_projects"
       API_DB_USER: "new_projects_user"
@@ -63,6 +68,7 @@ services:
       - ./nginx/sites/:/etc/nginx/sites-available
       - ./nginx/conf.d/:/etc/nginx/conf.d
       - ${TOURS_LOCAL_DIR}:${TOURS_REMOTE_DIR}
+      - ${USER_DASHBOARD_LOCAL_DIR}:${USER_DASHBOARD_REMOTE_DIR}
       - ${SF_LOCAL_DIR}:${SF_REMOTE_DIR}
       - ${TWO_D_LOCAL_DIR}:${TWO_D_REMOTE_DIR}
       - ${SF_NUXT_LOCAL_DIR}:${SF_NUXT_REMOTE_DIR}
@@ -77,6 +83,7 @@ services:
       - "90:80"
       - "91:81"
       - "92:82"
+      - "93:83"
       - "9443:443"
     networks:
       - app-network
