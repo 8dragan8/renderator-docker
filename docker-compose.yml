@@ -7,6 +7,13 @@ services:
     container_name: "php-app1"
     environment:
       APP_ENV: ${APP_ENV}
+
+      # DB_CONNECTION: ${DB_CONNECTION}
+      # DB_HOST: ${DB_HOST}
+      # DB_PORT: ${DB_PORT}
+      # DB_DATABASE: ${DB_DATABASE}
+      # DB_USERNAME: ${DB_USERNAME}
+      # DB_PASSWORD: ${DB_PASSWORD}
       # XDEBUG_CONFIG: remote_host=host.docker.internal remote_port=9000 remote_enable=1
     env_file: .env
     volumes:
@@ -39,12 +46,12 @@ services:
       SSR_API_URL: "http://nginx-app1"
       DATA_URL: "http://localhost:90"
       SSR_DATA_URL: "http://nginx-app1"
-      API_SF_URL: "http://192.168.0.104/api/v1"
-      API_VT_URL: "http://192.168.0.104/api/v1"
-      SSR_API_SF_URL: "http://192.168.0.104/api/v1"
-      # API_SF_URL: "http://nginx-app1/php/api"
+      # API_SF_URL: "http://192.168.0.102:81/api"
+      API_VT_URL: "http://localhost:81/api"
+      # SSR_API_SF_URL: "http://192.168.0.102:81/api"
+      API_SF_URL: "http://nginx-app1/php/api"
       # API_VT_URL: "https://api.renderator.com/api"
-      # SSR_API_SF_URL: "http://nginx-app1/php/api"
+      SSR_API_SF_URL: "http://nginx-app1/php/api"
 
       API_DB_DATABASE: "new_projects"
       API_DB_USER: "new_projects_user"
@@ -108,11 +115,15 @@ services:
   myadmin:
     image: phpmyadmin:latest
     container_name: "myadmin-app1"
+    volumes:
+      - ./myadmin/themes/darkwolf:/var/www/html/themes/darkwolf
     ports:
       - "9080:80"
     environment:
       PMA_ARBITRARY: 1
-      PMA_HOST: "localhost"
+      PMA_HOST: "db"
+      PMA_USER: "root"
+      PMA_PASSWORD: "docker"
     restart: unless-stopped
     depends_on:
       - db
