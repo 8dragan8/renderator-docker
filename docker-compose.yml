@@ -7,7 +7,6 @@ services:
     container_name: "php-app1"
     environment:
       APP_ENV: ${APP_ENV}
-
       # DB_CONNECTION: ${DB_CONNECTION}
       # DB_HOST: ${DB_HOST}
       # DB_PORT: ${DB_PORT}
@@ -38,18 +37,19 @@ services:
     working_dir: ${SF_NUXT_REMOTE_DIR}
     ports:
       - "9001:3000"
-    command: sh -c "npm run dev"
+    # command: sh -c "npm run dev"
+    # command: sh -c "npm run start"
     environment:
       HOST: "0.0.0.0"
-      APP_API_URL: "http://localhost:90"
-      API_URL: "http://localhost:90"
+      APP_API_URL: "${HOST_URL}:90"
+      API_URL: "${HOST_URL}:90"
       SSR_API_URL: "http://nginx-app1"
-      DATA_URL: "http://localhost:90"
+      DATA_URL: "${HOST_URL}:90"
       SSR_DATA_URL: "http://nginx-app1"
-      # API_SF_URL: "http://192.168.0.102:81/api"
+      API_SF_URL: "${HOST_URL}:90/php/api"
       API_VT_URL: "http://localhost:81/api"
       # SSR_API_SF_URL: "http://192.168.0.102:81/api"
-      API_SF_URL: "http://nginx-app1/php/api"
+      # API_SF_URL: "http://nginx-app1/php/api"
       # API_VT_URL: "https://api.renderator.com/api"
       SSR_API_SF_URL: "http://nginx-app1/php/api"
 
@@ -57,6 +57,9 @@ services:
       API_DB_USER: "new_projects_user"
       API_DB_PASSWORD: "UboLEsbI819wzrxo"
       API_DB_HOST: "db"
+
+      # NODE_OPTIONS: "--max_old_space_size=8000"
+
 
       GOOGLE_SECRET: "6LfkT9AZAAAAAMFD4WXdy5Mo05FGBq8IYGihoGa5"
       GOOGLE_SITE: "6LfkT9AZAAAAAB_CdVACMBP0pd61idodn7g9H0eq"
