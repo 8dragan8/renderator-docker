@@ -41,3 +41,6 @@ RUN rm -rf /var/cache/apk/*
 # COPY ./php/php.ini /usr/local/etc/php/
 
 EXPOSE 9000
+
+# Run php-fpm
+CMD ["php-fpm"]

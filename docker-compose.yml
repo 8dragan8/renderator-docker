@@ -1,34 +1,63 @@
 version: "3"
 
 services:
-  php-fpm:
+  user-dashboard-api:
     build:
       context: ./php
-    container_name: "php-app1"
+    container_name: "user-dashboard-api"
     environment:
       APP_ENV: ${APP_ENV}
-      # DB_CONNECTION: ${DB_CONNECTION}
-      # DB_HOST: ${DB_HOST}
-      # DB_PORT: ${DB_PORT}
-      # DB_DATABASE: ${DB_DATABASE}
-      # DB_USERNAME: ${DB_USERNAME}
-      # DB_PASSWORD: ${DB_PASSWORD}
-      # XDEBUG_CONFIG: remote_host=host.docker.internal remote_port=9000 remote_enable=1
+      APP_NAME: "renderator"
+
+      APP_DEBUG: "true" # true or false
+      APP_URL: "${HOST_URL}:94"
+      DB_CONNECTION: "mysql"
+      DB_HOST: "db-renderator"
+      DB_PORT: "3306"
+
+      DB_DATABASE: "render_db_v2"
+      DB_USERNAME: "root"
+      DB_PASSWORD: "docker"
+
+
+      DB_DATABASE_SF: "render_appdb"
+      DB_USERNAME_SF: "render_appdbu"
+      DB_PASSWORD_SF: "8BDGIegPW1"
+
+      SESSION_LIFETIME: "120"
+      BROADCAST_DRIVER: "log"
+      CACHE_DRIVER: "file"
+      QUEUE_CONNECTION: "sync"
+      SESSION_DRIVER: "file"
+      MEMCACHED_HOST: "127.0.0.1"
+      REDIS_HOST: "127.0.0.1"
+      REDIS_PORT: "6379"
+      L5_SWAGGER_CONST_HOST: "${HOST_URL}:94"
+      L5_FORMAT_TO_USE_FOR_DOCS: "yaml"
+      VARIFICATION_URL: "${HOST_URL}:94/user/verify?c="
+
+      MAIL_DRIVER: "smtp"
+      MAIL_HOST: "mailhog-renderator"
+      MAIL_PORT: "1025"
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      MAIL_ENCRYPTION: ""
     env_file: .env
     volumes:
       - ${USER_DASHBOARD_LOCAL_DIR}:${USER_DASHBOARD_REMOTE_DIR}
       - ${SF_LOCAL_DIR}:${SF_REMOTE_DIR}
       - ${TOURS_LOCAL_DIR}:${TOURS_REMOTE_DIR}
       - ${TWO_D_LOCAL_DIR}:${TWO_D_REMOTE_DIR}
+      - ${DASHBOARD_API_LOCAL_DIR}:${DASHBOARD_API_REMOTE_DIR}
       - ./php/php.ini:/usr/local/etc/php/conf.d/99.overrides.php.ini
     restart: unless-stopped
     networks:
-      - app-network
+      - renderator-net
 
-  node-js:
+  sf-nuxt:
     build:
       context: ${SF_NUXT_LOCAL_DIR}
-    container_name: "node-js"
+    container_name: "sf-nuxt"
     volumes:
       - ${SF_NUXT_LOCAL_DIR}:${SF_NUXT_REMOTE_DIR}
       # exclude
@@ -37,41 +66,34 @@ services:
     working_dir: ${SF_NUXT_REMOTE_DIR}
     ports:
       - "9001:3000"
-    # command: sh -c "npm run dev"
-    # command: sh -c "npm run start"
     environment:
       HOST: "0.0.0.0"
       APP_API_URL: "${HOST_URL}:90"
       API_URL: "${HOST_URL}:90"
-      SSR_API_URL: "http://nginx-app1"
+      SSR_API_URL: "http://nginx-renderator"
       DATA_URL: "${HOST_URL}:90"
-      SSR_DATA_URL: "http://nginx-app1"
+      SSR_DATA_URL: "http://nginx-renderator"
       API_SF_URL: "${HOST_URL}:90/php/api"
-      API_VT_URL: "http://localhost:81/api"
-      # SSR_API_SF_URL: "http://192.168.0.102:81/api"
-      # API_SF_URL: "http://nginx-app1/php/api"
-      # API_VT_URL: "https://api.renderator.com/api"
-      SSR_API_SF_URL: "http://nginx-app1/php/api"
+      API_VT_URL: "http://user-dashboard-api/api"
+
+      SSR_API_SF_URL: "http://nginx-renderator/php/api"
 
       API_DB_DATABASE: "new_projects"
       API_DB_USER: "new_projects_user"
       API_DB_PASSWORD: "UboLEsbI819wzrxo"
       API_DB_HOST: "db"
 
-      # NODE_OPTIONS: "--max_old_space_size=8000"
-
-
       GOOGLE_SECRET: "6LfkT9AZAAAAAMFD4WXdy5Mo05FGBq8IYGihoGa5"
       GOOGLE_SITE: "6LfkT9AZAAAAAB_CdVACMBP0pd61idodn7g9H0eq"
 
     restart: unless-stopped
     networks:
-      - app-network
+      - renderator-net
 
-  nginx:
+  nginx-renderator:
     build:
       context: ./nginx
-    container_name: "nginx-app1"
+    container_name: "nginx-renderator"
     restart: unless-stopped
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
@@ -82,24 +104,27 @@ services:
       - ${SF_LOCAL_DIR}:${SF_REMOTE_DIR}
       - ${TWO_D_LOCAL_DIR}:${TWO_D_REMOTE_DIR}
       - ${SF_NUXT_LOCAL_DIR}:${SF_NUXT_REMOTE_DIR}
+      - ${DASHBOARD_API_LOCAL_DIR}:${DASHBOARD_API_REMOTE_DIR}
+
       # exclude
       - ${SF_NUXT_REMOTE_DIR}/.nuxt
       - ${SF_NUXT_REMOTE_DIR}/node_modules
     depends_on:
-      - php-fpm
-      - node-js
+      - user-dashboard-api
+      - sf-nuxt
 
     ports:
       - "90:80"
       - "91:81"
       - "92:82"
       - "93:83"
-      - "9443:443"
+      - "94:84"
+      - "443:443"
     networks:
-      - app-network
-  db:
+      - renderator-net
+  db-renderator:
     image: mysql
-    container_name: "db-app1"
+    container_name: "db-renderator"
     environment:
       MYSQL_DATABASE: "render_appdb"
       MYSQL_USER: "render_appdbu"
@@ -111,42 +136,42 @@ services:
     ports:
       - 9306:3306
     depends_on:
-      - php-fpm
+      - user-dashboard-api
     networks:
-      - app-network
+      - renderator-net
 
-  myadmin:
+  myadmin-renderator:
     image: phpmyadmin:latest
-    container_name: "myadmin-app1"
+    container_name: "myadmin-renderator"
     volumes:
       - ./myadmin/themes/darkwolf:/var/www/html/themes/darkwolf
     ports:
       - "9080:80"
     environment:
       PMA_ARBITRARY: 1
-      PMA_HOST: "db"
+      PMA_HOST: "db-renderator"
       PMA_USER: "root"
       PMA_PASSWORD: "docker"
     restart: unless-stopped
     depends_on:
-      - db
+      - db-renderator
     networks:
-      - app-network
+      - renderator-net
 
-  mailhog:
+  mailhog-renderator:
     image: mailhog/mailhog
-    container_name: mailhog-app1
+    container_name: mailhog-renderator
     logging:
       driver: "none" # disable saving logs
     ports:
-      - 1026:1025 # smtp server
-      - 8026:8025 # web ui
+      - 1027:1025 # smtp server
+      - 8027:8025 # web ui
     restart: unless-stopped
     networks:
-      - app-network
+      - renderator-net
 
 networks:
-  app-network:
+  renderator-net:
     driver: bridge
 volumes:
   app-db-volume:
