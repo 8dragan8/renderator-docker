@@ -49,7 +49,7 @@ services:
       - ${DASHBOARD_API_LOCAL_DIR}:${DASHBOARD_API_REMOTE_DIR}
       - ./php/php.ini:/usr/local/etc/php/conf.d/99.overrides.php.ini
       # exclude
-      - ${SF_LOCAL_DIR}/data
+      # - ${SF_LOCAL_DIR}/data
     restart: unless-stopped
     networks:
       - renderator-net
@@ -92,6 +92,21 @@ services:
     restart: unless-stopped
     networks:
       - renderator-net
+  dashboard:
+    image: mcr.microsoft.com/dotnet/sdk:5.0
+    container_name: "dashboard"
+    command: "dotnet run --project RWA.Web"
+    volumes:
+      - ${USER_DASHBOARD_LOCAL_DIR}:${USER_DASHBOARD_REMOTE_DIR}
+    working_dir: ${USER_DASHBOARD_REMOTE_DIR}
+    extra_hosts:
+      - "dashboard-api.renderator.com:host-gateway"
+    environment:
+      HOST: "0.0.0.0"
+      
+    restart: unless-stopped
+    networks:
+      - renderator-net
 
   nginx-renderator:
     build:
@@ -113,10 +128,11 @@ services:
       # exclude
       - ${SF_NUXT_REMOTE_DIR}/.nuxt
       - ${SF_NUXT_REMOTE_DIR}/node_modules
-      - ${SF_LOCAL_DIR}/data
+      # - ${SF_LOCAL_DIR}/data
     depends_on:
       - user-dashboard-api
       - sf-nuxt
+      - dashboard
 
     ports:
       - "90:80"
