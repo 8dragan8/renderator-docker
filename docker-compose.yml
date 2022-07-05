@@ -9,13 +9,14 @@ services:
       HOST: "0.0.0.0"
       APP_ENV: ${APP_ENV}
       APP_NAME: "renderator"
+      APP_KEY: "base64:8ZcDDNEzcJ7Qh59SmC2utLIKBmzql5Wfk8ckTtNmh2Y="
+
 
       APP_DEBUG: "true" # true or false
       APP_URL: "${HOST_URL}:94"
       DB_CONNECTION: "mysql"
       DB_HOST: "db-renderator"
       DB_PORT: "3306"
-
       DB_DATABASE: "render_db_v3"
       DB_USERNAME: "root"
       DB_PASSWORD: "docker"
@@ -36,19 +37,23 @@ services:
       MAIL_DRIVER: "smtp"
       MAIL_HOST: "mailhog-renderator"
       MAIL_PORT: "1025"
-      MAIL_USERNAME: ""
-      MAIL_PASSWORD: ""
-      MAIL_ENCRYPTION: ""
+      MAIL_USERNAME: "null"
+      MAIL_PASSWORD: "null"
+      MAIL_ENCRYPTION: "null"
     env_file: .env
+    extra_hosts:
+      - "dashboard-api.renderator2.com:host-gateway"
     volumes:
       - ${USER_DASHBOARD_LOCAL_DIR}:${USER_DASHBOARD_REMOTE_DIR}
       - ${SF_LOCAL_DIR}:${SF_REMOTE_DIR}
       - ${SF_DATA_LOCAL_DIR}:${SF_DATA_REMOTE_DIR}
-      - ${TOURS_LOCAL_DIR}:${TOURS_REMOTE_DIR}
-      - ${TWO_D_LOCAL_DIR}:${TWO_D_REMOTE_DIR}
+      # - ${TOURS_LOCAL_DIR}:${TOURS_REMOTE_DIR}
+      # - ${TWO_D_LOCAL_DIR}:${TWO_D_REMOTE_DIR}
+      - ${SF_DATA_LOCAL_DIR}:${DASHBOARD_API_DATA_REMOTE_DIR}
       - ${DASHBOARD_API_LOCAL_DIR}:${DASHBOARD_API_REMOTE_DIR}
       - ./php/php.ini:/usr/local/etc/php/conf.d/99.overrides.php.ini
       # exclude
+      - ${DASHBOARD_API_DATA_LOCAL_DIR}
       # - ${SF_LOCAL_DIR}/data
     restart: unless-stopped
     networks:
@@ -71,11 +76,16 @@ services:
       - "9001:3000"
     environment:
       HOST: "0.0.0.0"
-      APP_API_URL: "${HOST_URL}:90"
-      API_URL: "${HOST_URL}:90"
+      # API_URL: "${HOST_URL}:90"
       SSR_API_URL: "http://nginx-renderator"
+      API_URL: http://dashboard-api.renderator2.com:94
+      API_URL_GET_BUILDING_DATA: /api/v2/get_building_by_token
+      API_URL_GET_PROPERTIES_DATA: /api/v2/get_building_data
+
+      APP_API_URL: "${HOST_URL}:90"
       DATA_URL: "${HOST_URL}:90"
       SSR_DATA_URL: "http://nginx-renderator"
+
       API_SF_URL: "${HOST_URL}:90/php/api"
       API_VT_URL: "http://user-dashboard-api/api"
 
@@ -117,11 +127,11 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/sites/:/etc/nginx/sites-available
       - ./nginx/conf.d/:/etc/nginx/conf.d
-      - ${TOURS_LOCAL_DIR}:${TOURS_REMOTE_DIR}
+      # - ${TOURS_LOCAL_DIR}:${TOURS_REMOTE_DIR}
       - ${USER_DASHBOARD_LOCAL_DIR}:${USER_DASHBOARD_REMOTE_DIR}
       - ${SF_LOCAL_DIR}:${SF_REMOTE_DIR}
       - ${SF_DATA_LOCAL_DIR}:${SF_DATA_REMOTE_DIR}
-      - ${TWO_D_LOCAL_DIR}:${TWO_D_REMOTE_DIR}
+      # - ${TWO_D_LOCAL_DIR}:${TWO_D_REMOTE_DIR}
       - ${SF_NUXT_LOCAL_DIR}:${SF_NUXT_REMOTE_DIR}
       - ${DASHBOARD_API_LOCAL_DIR}:${DASHBOARD_API_REMOTE_DIR}
 
