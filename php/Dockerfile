@@ -2,7 +2,6 @@ FROM php:7.4-fpm-alpine
 
 # Application environment variable
 ARG APP_ENV
-
 # Install Additional dependencies
 RUN apk update && apk add --no-cache $PHPIZE_DEPS \
    make nasm autoconf automake libtool dpkg pkgconfig libpng libpng-dev g++ \
@@ -40,6 +39,15 @@ RUN mv composer.phar /usr/local/bin/composer
 RUN rm -rf /var/cache/apk/*
 # COPY ./php/php.ini /usr/local/etc/php/
 
+WORKDIR /home/renderator-api-v2
+
+# USER www-data
+# RUN composer install
+# RUN composer dump-autoload
+# RUN php artisan optimize:clear
+
+
+# RUN chown -R www-data:www-data /home/
 EXPOSE 9000
 
 # Run php-fpm
