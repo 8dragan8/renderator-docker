@@ -11,7 +11,6 @@ services:
       APP_NAME: "renderator"
       APP_KEY: "base64:8ZcDDNEzcJ7Qh59SmC2utLIKBmzql5Wfk8ckTtNmh2Y="
 
-
       APP_DEBUG: "true" # true or false
       APP_URL: "${HOST_URL}:94"
       DB_CONNECTION: "mysql"
@@ -20,7 +19,6 @@ services:
       DB_DATABASE: "render_db_v3"
       DB_USERNAME: "root"
       DB_PASSWORD: "docker"
-
 
       SESSION_LIFETIME: "120"
       BROADCAST_DRIVER: "log"
@@ -33,6 +31,7 @@ services:
       L5_SWAGGER_CONST_HOST: "${HOST_URL}:94"
       L5_FORMAT_TO_USE_FOR_DOCS: "yaml"
       VARIFICATION_URL: "${HOST_URL}:94/user/verify?c="
+      suites_flow_base_url: "http://dre-len:90"
 
       MAIL_DRIVER: "smtp"
       MAIL_HOST: "mailhog-renderator"
@@ -53,7 +52,7 @@ services:
       - ${DASHBOARD_API_LOCAL_DIR}:${DASHBOARD_API_REMOTE_DIR}
       - ./php/php.ini:/usr/local/etc/php/conf.d/99.overrides.php.ini
       # exclude
-      - ${DASHBOARD_API_DATA_LOCAL_DIR}
+      # - ${DASHBOARD_API_DATA_LOCAL_DIR}
       # - ${SF_LOCAL_DIR}/data
     restart: unless-stopped
     networks:
@@ -74,16 +73,29 @@ services:
 
     ports:
       - "9001:3000"
+      - "9229:9229"
+      - "9230:9230"
     environment:
+
+      SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
+      MAP_BOX_API_KEY: ${MAP_BOX_API_KEY}
+
       HOST: "0.0.0.0"
       # API_URL: "${HOST_URL}:90"
-      SSR_API_URL: "http://nginx-renderator"
+
       API_URL: http://dashboard-api.renderator2.com:94
+      APP_API_URL: "${HOST_URL}:90"
+      DATA_URL: "${HOST_URL}:90"
+
+      # settings for remote API dev
+      # API_URL: https://dashboard-api.dev.renderator.com
+      # APP_API_URL: "${HOST_URL}:90"
+      # DATA_URL: "https://dashboard-api.dev.renderator.com"
+
+      SSR_API_URL: "http://nginx-renderator"
       API_URL_GET_BUILDING_DATA: /api/v2/get_building_by_token
       API_URL_GET_PROPERTIES_DATA: /api/v2/get_building_data
 
-      APP_API_URL: "${HOST_URL}:90"
-      DATA_URL: "${HOST_URL}:90"
       SSR_DATA_URL: "http://nginx-renderator"
 
       API_SF_URL: "${HOST_URL}:90/php/api"
@@ -113,7 +125,7 @@ services:
       - "dashboard-api.renderator.com:host-gateway"
     environment:
       HOST: "0.0.0.0"
-      
+
     restart: unless-stopped
     networks:
       - renderator-net
