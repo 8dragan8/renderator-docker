@@ -31,7 +31,7 @@ services:
       L5_SWAGGER_CONST_HOST: "${HOST_URL}:94"
       L5_FORMAT_TO_USE_FOR_DOCS: "yaml"
       VARIFICATION_URL: "${HOST_URL}:94/user/verify?c="
-      suites_flow_base_url: "http://dre-len:90"
+      suites_flow_base_url: "${HOST_URL}:90"
 
       MAIL_DRIVER: "smtp"
       MAIL_HOST: "mailhog-renderator"
@@ -44,8 +44,8 @@ services:
       - "dashboard-api.renderator2.com:host-gateway"
     volumes:
       - ${USER_DASHBOARD_LOCAL_DIR}:${USER_DASHBOARD_REMOTE_DIR}
-      - ${SF_LOCAL_DIR}:${SF_REMOTE_DIR}
-      - ${SF_DATA_LOCAL_DIR}:${SF_DATA_REMOTE_DIR}
+      # - ${SF_LOCAL_DIR}:${SF_REMOTE_DIR}
+      # - ${SF_DATA_LOCAL_DIR}:${SF_DATA_REMOTE_DIR}
       # - ${TOURS_LOCAL_DIR}:${TOURS_REMOTE_DIR}
       # - ${TWO_D_LOCAL_DIR}:${TWO_D_REMOTE_DIR}
       - ${SF_DATA_LOCAL_DIR}:${DASHBOARD_API_DATA_REMOTE_DIR}
@@ -77,37 +77,23 @@ services:
       - "9230:9230"
     environment:
 
-      SSH_PRIVATE_KEY: ${SSH_PRIVATE_KEY}
-      MAP_BOX_API_KEY: ${MAP_BOX_API_KEY}
-
       HOST: "0.0.0.0"
-      # API_URL: "${HOST_URL}:90"
 
-      API_URL: http://dashboard-api.renderator2.com:94
-      APP_API_URL: "${HOST_URL}:90"
-      DATA_URL: "${HOST_URL}:90"
+      API_URL: "${HOST_URL}:94"
+      SSR_API_URL: "http://dashboard-api.renderator2.com:94"
 
-      # settings for remote API dev
-      # API_URL: https://dashboard-api.dev.renderator.com
-      # APP_API_URL: "${HOST_URL}:90"
-      # DATA_URL: "https://dashboard-api.dev.renderator.com"
+      DATA_URL: "${HOST_URL}:94"
+      SSR_DATA_URL: "http://dashboard-api.renderator2.com:94"
 
-      SSR_API_URL: "http://nginx-renderator"
       API_URL_GET_BUILDING_DATA: /api/v2/get_building_by_token
       API_URL_GET_PROPERTIES_DATA: /api/v2/get_building_data
-
-      SSR_DATA_URL: "http://nginx-renderator"
-
-      API_SF_URL: "${HOST_URL}:90/php/api"
-      API_VT_URL: "http://user-dashboard-api/api"
-
-      SSR_API_SF_URL: "http://nginx-renderator/php/api"
 
       API_DB_DATABASE: "new_projects"
       API_DB_USER: "new_projects_user"
       API_DB_PASSWORD: "UboLEsbI819wzrxo"
       API_DB_HOST: "db-renderator"
 
+      MAP_BOX_API_KEY: ${MAP_BOX_API_KEY}
       GOOGLE_SECRET: "6LfkT9AZAAAAAMFD4WXdy5Mo05FGBq8IYGihoGa5"
       GOOGLE_SITE: "6LfkT9AZAAAAAB_CdVACMBP0pd61idodn7g9H0eq"
 
@@ -141,8 +127,10 @@ services:
       - ./nginx/conf.d/:/etc/nginx/conf.d
       # - ${TOURS_LOCAL_DIR}:${TOURS_REMOTE_DIR}
       - ${USER_DASHBOARD_LOCAL_DIR}:${USER_DASHBOARD_REMOTE_DIR}
-      - ${SF_LOCAL_DIR}:${SF_REMOTE_DIR}
-      - ${SF_DATA_LOCAL_DIR}:${SF_DATA_REMOTE_DIR}
+      - ${SF_DATA_LOCAL_DIR}:${DASHBOARD_API_DATA_REMOTE_DIR}
+
+      # - ${SF_LOCAL_DIR}:${SF_REMOTE_DIR}
+      # - ${SF_DATA_LOCAL_DIR}:${SF_DATA_REMOTE_DIR}
       # - ${TWO_D_LOCAL_DIR}:${TWO_D_REMOTE_DIR}
       - ${SF_NUXT_LOCAL_DIR}:${SF_NUXT_REMOTE_DIR}
       - ${DASHBOARD_API_LOCAL_DIR}:${DASHBOARD_API_REMOTE_DIR}
