@@ -87,6 +87,7 @@ services:
 
       API_URL_GET_BUILDING_DATA: /api/v2/get_building_by_token
       API_URL_GET_PROPERTIES_DATA: /api/v2/get_building_data
+      API_URL_SEND_LEAD: /api/v2/addsuiteslead
 
       API_DB_DATABASE: "new_projects"
       API_DB_USER: "new_projects_user"
@@ -138,7 +139,6 @@ services:
       # exclude
       - ${SF_NUXT_REMOTE_DIR}/.nuxt
       - ${SF_NUXT_REMOTE_DIR}/node_modules
-      # - ${SF_LOCAL_DIR}/data
     depends_on:
       - user-dashboard-api
       - sf-nuxt

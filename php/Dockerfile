@@ -5,7 +5,7 @@ ARG APP_ENV
 # Install Additional dependencies
 RUN apk update && apk add --no-cache $PHPIZE_DEPS \
    make nasm autoconf automake libtool dpkg pkgconfig libpng libpng-dev g++ \
-   build-base shadow nano curl gcc git bash 
+   build-base shadow nano curl gcc git bash zip libzip-dev
 # php7 \
 # php7-fpm \
 # php7-common \
@@ -23,6 +23,9 @@ RUN apk update && apk add --no-cache $PHPIZE_DEPS \
 # php7-dom \
 # php7-session \
 # php7-zlib
+# RUN docker-php-ext-configure gd --with-jpeg --with-freetype 
+RUN docker-php-ext-install gd 
+RUN docker-php-ext-install zip
 
 # Install extensions
 RUN docker-php-ext-install pdo pdo_mysql
