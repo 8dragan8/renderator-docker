@@ -39,6 +39,13 @@ services:
       MAIL_USERNAME: "null"
       MAIL_PASSWORD: "null"
       MAIL_ENCRYPTION: "null"
+
+      AWS_ACCESS_KEY_ID: "AKIARFJ3HXWGMXW7RI6Y"
+      AWS_SECRET_ACCESS_KEY: "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"
+      AWS_DEFAULT_REGION: "us-east-2"
+      AWS_BUCKET: "renderator-dashboard-api"
+      AWS_USE_PATH_STYLE_ENDPOINT: false
+
     env_file: .env
     extra_hosts:
       - "dashboard-api.renderator2.com:host-gateway"
@@ -183,6 +190,7 @@ services:
       PMA_HOST: "db-renderator"
       PMA_USER: "root"
       PMA_PASSWORD: "docker"
+      UPLOAD_LIMIT: "300M"
     restart: unless-stopped
     depends_on:
       - db-renderator
