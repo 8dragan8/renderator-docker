@@ -75,6 +75,7 @@ services:
       - ${SF_NUXT_REMOTE_DIR}/.nuxt
       - ${SF_NUXT_REMOTE_DIR}/node_modules
     working_dir: ${SF_NUXT_REMOTE_DIR}
+    # command: [ "npm", "start" ]
     extra_hosts:
       - "dashboard-api.renderator2.com:host-gateway"
 
