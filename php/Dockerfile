@@ -31,8 +31,11 @@ RUN docker-php-ext-install zip
 RUN docker-php-ext-install pdo pdo_mysql
 RUN docker-php-ext-enable pdo_mysql
 
+# RUN docker-php-ext-install xdebug
+# RUN docker-php-ext-enable xdebug
+
 # install xdebug and enable it if the development environment is local
-RUN    pecl install xdebug; \
+RUN    pecl install xdebug-3.1.5; \
    docker-php-ext-enable xdebug;
 # Install PHP Composer
 RUN curl -sS https://getcomposer.org/installer | php

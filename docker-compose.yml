@@ -51,6 +51,7 @@ services:
       - "dashboard-api.renderator2.com:host-gateway"
     volumes:
       - ${USER_DASHBOARD_LOCAL_DIR}:${USER_DASHBOARD_REMOTE_DIR}
+      - ${RENDER_CLICK_LOCAL_DIR}:${RENDER_CLICK_REMOTE_DIR}
       # - ${SF_LOCAL_DIR}:${SF_REMOTE_DIR}
       # - ${SF_DATA_LOCAL_DIR}:${SF_DATA_REMOTE_DIR}
       # - ${TOURS_LOCAL_DIR}:${TOURS_REMOTE_DIR}
@@ -137,6 +138,7 @@ services:
       # - ${TOURS_LOCAL_DIR}:${TOURS_REMOTE_DIR}
       - ${USER_DASHBOARD_LOCAL_DIR}:${USER_DASHBOARD_REMOTE_DIR}
       - ${SF_DATA_LOCAL_DIR}:${DASHBOARD_API_DATA_REMOTE_DIR}
+      - ${RENDER_CLICK_LOCAL_DIR}:${RENDER_CLICK_REMOTE_DIR}
 
       # - ${SF_LOCAL_DIR}:${SF_REMOTE_DIR}
       # - ${SF_DATA_LOCAL_DIR}:${SF_DATA_REMOTE_DIR}
@@ -158,6 +160,7 @@ services:
       - "92:82"
       - "93:83"
       - "94:84"
+      - "3095:85"
       - "443:443"
     networks:
       - renderator-net
