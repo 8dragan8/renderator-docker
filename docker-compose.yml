@@ -40,11 +40,20 @@ services:
       MAIL_PASSWORD: "null"
       MAIL_ENCRYPTION: "null"
 
+      FILESYSTEM_DRIVER: 's3'
+
       AWS_ACCESS_KEY_ID: "AKIARFJ3HXWGMXW7RI6Y"
       AWS_SECRET_ACCESS_KEY: "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"
       AWS_DEFAULT_REGION: "us-east-2"
       AWS_BUCKET: "renderator-dashboard-api"
       AWS_USE_PATH_STYLE_ENDPOINT: false
+
+      # Renderclick variables
+      RDCLK_DB_HOST: "db-renderator"
+      RDCLK_DB_PORT: "3306"
+      RDCLK_DB_DATABASE: "render_rclickdb"
+      RDCLK_DB_USERNAME: "render_rclickdbu"
+      RDCLK_DB_PASSWORD: "xx849kxDGl"
 
     env_file: .env
     extra_hosts:
@@ -58,7 +67,7 @@ services:
       # - ${TWO_D_LOCAL_DIR}:${TWO_D_REMOTE_DIR}
       - ${SF_DATA_LOCAL_DIR}:${DASHBOARD_API_DATA_REMOTE_DIR}
       - ${DASHBOARD_API_LOCAL_DIR}:${DASHBOARD_API_REMOTE_DIR}
-      - ./php/php.ini:/usr/local/etc/php/conf.d/99.overrides.php.ini
+      - ./php/php.ini:/usr/local/etc/php/conf.d/99-xdebug.ini
       # exclude
       # - ${DASHBOARD_API_DATA_LOCAL_DIR}
       # - ${SF_LOCAL_DIR}/data
@@ -69,7 +78,9 @@ services:
   sf-nuxt:
     build:
       context: ${SF_NUXT_LOCAL_DIR}
+      dockerfile: Dockerfile.DEV
     container_name: "sf-nuxt"
+    user: root
     volumes:
       - ${SF_NUXT_LOCAL_DIR}:${SF_NUXT_REMOTE_DIR}
       # exclude
@@ -88,20 +99,21 @@ services:
 
       HOST: "0.0.0.0"
 
+      # API_URL: "https://dashboard-api.dev.renderator.com"
       API_URL: "${HOST_URL}:94"
       SSR_API_URL: "http://dashboard-api.renderator2.com:94"
 
-      DATA_URL: "${HOST_URL}:94"
-      SSR_DATA_URL: "http://dashboard-api.renderator2.com:94"
+      # DATA_URL: "${HOST_URL}:94"
+      # SSR_DATA_URL: "http://dashboard-api.renderator2.com:94"
 
       API_URL_GET_BUILDING_DATA: /api/v2/get_building_by_token
       API_URL_GET_PROPERTIES_DATA: /api/v2/get_building_data
       API_URL_SEND_LEAD: /api/v2/addsuiteslead
 
-      API_DB_DATABASE: "new_projects"
-      API_DB_USER: "new_projects_user"
-      API_DB_PASSWORD: "UboLEsbI819wzrxo"
-      API_DB_HOST: "db-renderator"
+      # API_DB_DATABASE: "new_projects"
+      # API_DB_USER: "new_projects_user"
+      # API_DB_PASSWORD: "UboLEsbI819wzrxo"
+      # API_DB_HOST: "db-renderator"
 
       MAP_BOX_API_KEY: ${MAP_BOX_API_KEY}
       GOOGLE_SECRET: "6LfkT9AZAAAAAMFD4WXdy5Mo05FGBq8IYGihoGa5"
