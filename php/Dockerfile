@@ -5,7 +5,7 @@ ARG APP_ENV
 # Install Additional dependencies
 RUN apk update && apk add --no-cache $PHPIZE_DEPS \
    make nasm autoconf automake libtool dpkg pkgconfig libpng libpng-dev g++ \
-   build-base shadow nano curl gcc git bash zip libzip-dev
+   build-base shadow nano curl gcc git bash zip libzip-dev npm
 # php7 \
 # php7-fpm \
 # php7-common \
